@@ -1,0 +1,758 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Caderno da Horta</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;700&display=swap">
+<style>
+/* Layout: cabeçalho simples, coluna única de até 860px, navegação fixa embaixo com 5 seções.
+   Pensado para uso no celular, com letra grande e botões de pelo menos 48px. */
+:root {
+  --bg: #F3F6F1;
+  --surface: #FFFFFF;
+  --surface-2: #E8EEE5;
+  --ink: #1B2620;
+  --muted: #526158;
+  --line: #D3DCCF;
+  --leaf: #2E7D4F;
+  --leaf-ink: #FFFFFF;
+  --leaf-soft: #D9EBDF;
+  --sun-ink: #7A4F0B;
+  --sun-soft: #F7E8C4;
+  --rain-ink: #1F5A86;
+  --rain-soft: #DAE9F5;
+  --danger-ink: #A3321F;
+  --danger-soft: #F6DCD6;
+  --font-body: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-head: 'Bricolage Grotesque', 'Atkinson Hyperlegible', system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1711; --surface: #18231C; --surface-2: #213027; --ink: #E7EFE8; --muted: #A5B5AA;
+    --line: #2E3F33; --leaf: #5CBA84; --leaf-ink: #0C1A11; --leaf-soft: #1F3A2A;
+    --sun-ink: #F0C36A; --sun-soft: #3A2F14; --rain-ink: #8CC1E8; --rain-soft: #1A2E3E;
+    --danger-ink: #F29A89; --danger-soft: #402019;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1711; --surface: #18231C; --surface-2: #213027; --ink: #E7EFE8; --muted: #A5B5AA;
+  --line: #2E3F33; --leaf: #5CBA84; --leaf-ink: #0C1A11; --leaf-soft: #1F3A2A;
+  --sun-ink: #F0C36A; --sun-soft: #3A2F14; --rain-ink: #8CC1E8; --rain-soft: #1A2E3E;
+  --danger-ink: #F29A89; --danger-soft: #402019;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 17px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 12px 96px;
+}
+body.noscroll { overflow: hidden; }
+h1, h2, h3 { font-family: var(--font-head); line-height: 1.15; margin: 0; text-wrap: balance; }
+h2 { font-size: 22px; }
+h3 { font-size: 19px; }
+p { margin: 0; }
+a { color: var(--leaf); font-weight: 700; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--rain-ink); outline-offset: 2px; }
+.app { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-block: 4px; }
+.brand { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.brand h1 { font-size: 26px; }
+.brand span { color: var(--muted); font-size: 15px; }
+.sync { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 14px; font-weight: 700; cursor: pointer; }
+.sync i { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); }
+.sync.shared i { background: var(--leaf); }
+.sync.local i { background: #D98E04; }
+.panel { display: flex; flex-direction: column; gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.card.soft { background: var(--surface-2); border-color: transparent; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.row.start { align-items: flex-start; }
+.stack { display: flex; flex-direction: column; gap: 10px; }
+.meta { color: var(--muted); font-size: 15px; }
+.lead { font-size: 18px; }
+.hint { font-size: 14px; color: var(--muted); }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 11px; border-radius: 999px; font-size: 14px; font-weight: 700; background: var(--surface-2); color: var(--ink); white-space: nowrap; }
+.chip.grow { background: var(--rain-soft); color: var(--rain-ink); }
+.chip.soon { background: var(--sun-soft); color: var(--sun-ink); }
+.chip.ready, .chip.l2 { background: var(--leaf); color: var(--leaf-ink); }
+.chip.late, .chip.low { background: var(--danger-soft); color: var(--danger-ink); }
+.chip.l1 { background: var(--sun-soft); color: var(--sun-ink); }
+.chip.l0, .chip.done { background: var(--surface-2); color: var(--muted); }
+.btn { min-height: 48px; padding: 0 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center; }
+.btn:hover { background: var(--surface-2); }
+.btn.primary { background: var(--leaf); border-color: var(--leaf); color: var(--leaf-ink); }
+.btn.primary:hover { filter: brightness(1.06); }
+.btn.small { min-height: 42px; padding: 0 14px; font-size: 16px; }
+.btn.danger { color: var(--danger-ink); }
+.btn.armed { background: var(--danger-soft); border-color: var(--danger-ink); color: var(--danger-ink); }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.seg { display: flex; gap: 8px; flex-wrap: wrap; }
+.seg .btn { min-height: 44px; }
+.seg .btn[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.empty { border: 2px dashed var(--line); border-radius: 14px; padding: 20px 16px; display: flex; flex-direction: column; gap: 10px; align-items: flex-start; color: var(--muted); }
+.empty strong { color: var(--ink); font-size: 18px; }
+.notice { border-radius: 12px; padding: 12px 14px; background: var(--sun-soft); color: var(--sun-ink); font-size: 15px; font-weight: 700; }
+.notice.info { background: var(--rain-soft); color: var(--rain-ink); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+label { display: flex; flex-direction: column; gap: 6px; font-weight: 700; font-size: 16px; }
+input, select, textarea { width: 100%; min-height: 48px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--surface); }
+textarea { min-height: 96px; resize: vertical; }
+.fields { display: flex; flex-direction: column; gap: 14px; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 440px) { .two { grid-template-columns: 1fr; } }
+.strip { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; }
+.strip .m { height: 28px; display: grid; place-items: center; border-radius: 6px; font-size: 13px; font-weight: 700; background: var(--surface-2); color: var(--muted); }
+.strip .m2 { background: var(--leaf); color: var(--leaf-ink); }
+.strip .m1 { background: var(--leaf-soft); color: var(--ink); }
+.strip .m.now { outline: 2px solid var(--ink); outline-offset: 1px; }
+.bar { height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.bar > span { display: block; height: 100%; background: var(--leaf); border-radius: 999px; }
+.bar.late > span { background: var(--danger-ink); }
+details summary { cursor: pointer; font-weight: 700; min-height: 40px; display: flex; align-items: center; color: var(--leaf); }
+dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 16px; }
+dt { color: var(--muted); font-weight: 700; }
+dd { margin: 0; }
+.qty { display: inline-flex; align-items: center; gap: 8px; }
+.qty b { min-width: 3ch; text-align: center; font-size: 22px; font-variant-numeric: tabular-nums; }
+.qty .btn { width: 48px; padding: 0; font-size: 24px; }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 560px; font-size: 15px; }
+th, td { padding: 6px 4px; text-align: center; }
+th { font-size: 13px; color: var(--muted); }
+td:first-child, th:first-child { text-align: left; padding-left: 12px; position: sticky; left: 0; background: var(--surface); z-index: 1; font-weight: 700; min-width: 120px; }
+tr.grp td { background: var(--surface-2); font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; text-align: left; padding-left: 12px; }
+td .dot { display: block; height: 20px; margin: 0 2px; border-radius: 5px; background: var(--surface-2); }
+td .dot.m2 { background: var(--leaf); } td .dot.m1 { background: var(--leaf-soft); }
+td.now .dot { outline: 2px solid var(--ink); outline-offset: 1px; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 14px; color: var(--muted); align-items: center; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 18px; height: 14px; border-radius: 4px; display: inline-block; background: var(--surface-2); }
+.legend i.m2 { background: var(--leaf); } .legend i.m1 { background: var(--leaf-soft); }
+.day { font-family: var(--font-head); font-size: 16px; color: var(--muted); padding-top: 6px; }
+.log { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; align-items: start; }
+.log .txt { overflow-wrap: anywhere; }
+.nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); border-top: 1px solid var(--line);
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  padding: 4px max(8px, env(safe-area-inset-right, 0px)) calc(4px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
+.nav button { min-height: 62px; border: 0; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; border-radius: 12px; }
+.nav button svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.nav button[aria-current="page"] { color: var(--leaf); background: var(--leaf-soft); }
+#sheet { position: fixed; inset: 0; z-index: 40; background: rgba(8, 14, 10, .55); display: flex; align-items: flex-end; justify-content: center; }
+.sheet-panel { background: var(--bg); width: min(640px, 100%); max-height: 92%; overflow: auto; border-radius: 20px 20px 0 0; padding: 18px max(16px, env(safe-area-inset-left, 0px)) calc(20px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 16px; }
+@media (min-width: 700px) { #sheet { align-items: center; } .sheet-panel { border-radius: 20px; } }
+#toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(86px + env(safe-area-inset-bottom, 0px)); z-index: 50; background: var(--ink); color: var(--bg); padding: 12px 18px; border-radius: 12px; font-weight: 700; max-width: calc(100% - 32px); text-align: center; }
+@media (prefers-reduced-motion: no-preference) { .bar > span { transition: width .4s ease; } }
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <h1>Caderno da Horta</h1>
+      <span>Horta Comunitária do Vitória Régia, Curitiba</span>
+      <span id="today"></span>
+    </div>
+    <button class="sync" id="sync" data-act="info" type="button" aria-label="Onde ficam os registros"><i></i><span id="syncText">Carregando…</span></button>
+  </header>
+  <main>
+    <section class="panel" id="p-hoje" aria-label="Hoje"></section>
+    <section class="panel" id="p-epocas" aria-label="Épocas de plantio" hidden></section>
+    <section class="panel" id="p-plantios" aria-label="Plantios" hidden></section>
+    <section class="panel" id="p-sementes" aria-label="Sementes" hidden></section>
+    <section class="panel" id="p-diario" aria-label="Diário" hidden></section>
+  </main>
+</div>
+
+<nav class="nav" aria-label="Seções do caderno">
+  <button type="button" data-act="tab" data-id="hoje"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Hoje</button>
+  <button type="button" data-act="tab" data-id="epocas"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Épocas</button>
+  <button type="button" data-act="tab" data-id="plantios"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21v-9"/><path d="M12 12c0-4 3-6 7-6 0 4-3 6-7 6z"/><path d="M12 15c0-3-2-5-6-5 0 3 2 5 6 5z"/></svg>Plantios</button>
+  <button type="button" data-act="tab" data-id="sementes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c4 4 6 7 6 10a6 6 0 0 1-12 0c0-3 2-6 6-10z"/><path d="M12 21v-8"/></svg>Sementes</button>
+  <button type="button" data-act="tab" data-id="diario"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4z"/><path d="M8 8h7M8 12h7"/></svg>Diário</button>
+</nav>
+
+<div id="sheet" hidden>
+  <div class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <div class="row"><h2 id="sheetTitle"></h2><button class="btn small" type="button" data-act="close">Fechar</button></div>
+    <div id="sheetBody"></div>
+  </div>
+</div>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- Dados de referência: hortaliças (Curitiba e região, valores aproximados) ---------- */
+  // m = situação em cada mês, de janeiro a dezembro: 2 ótimo, 1 possível com cuidado, 0 fora de época.
+  // min/max = dias até a primeira colheita, contados do plantio (semente) ou do transplante da muda.
+  function c(id, nome, grupo, metodo, min, max, m, esp, dica) { return { id: id, nome: nome, grupo: grupo, metodo: metodo, min: min, max: max, m: m, esp: esp, dica: dica }; }
+  var CROPS = [
+    c('alface', 'Alface', 'Folhas', 'Muda', 30, 45, '222221122222', '25 × 25 cm', 'Regue todo dia, de manhã. No calor forte use sombrite ou cultivar de verão.'),
+    c('rucula', 'Rúcula', 'Folhas', 'Semente direta', 30, 45, '122221122221', '10 × 20 cm', 'Semeie em fileiras e colha as folhas de fora. Floresce rápido no calor.'),
+    c('couve', 'Couve', 'Folhas', 'Muda', 60, 90, '122222222111', '50 × 80 cm', 'Colha as folhas de baixo e deixe o broto central crescer. Rende por meses.'),
+    c('espinafre', 'Espinafre', 'Folhas', 'Semente direta', 40, 60, '012222222100', '20 × 30 cm', 'Gosta de solo úmido. Colha as folhas externas.'),
+    c('acelga', 'Acelga', 'Folhas', 'Semente ou muda', 50, 70, '122221122211', '30 × 40 cm', 'Colha as folhas externas; a planta rebrota.'),
+    c('repolho', 'Repolho', 'Folhas', 'Muda', 80, 110, '122222221000', '40 × 60 cm', 'Precisa de adubo e rega constante. Vigie lagartas.'),
+    c('brocolis', 'Brócolis', 'Folhas', 'Muda', 70, 100, '122221122100', '50 × 70 cm', 'Colha a cabeça principal antes de as flores abrirem; depois vêm os brotos laterais.'),
+    c('couveflor', 'Couve-flor', 'Folhas', 'Muda', 80, 110, '012210012100', '50 × 70 cm', 'Mais exigente em frio e água. Colha antes de a cabeça abrir.'),
+    c('cebolinha', 'Cebolinha', 'Temperos', 'Muda ou touceira', 50, 70, '122221122221', '20 × 20 cm', 'Corte deixando 5 cm; rebrota. Divida a touceira uma vez por ano.'),
+    c('salsinha', 'Salsinha', 'Temperos', 'Semente direta', 60, 90, '122221122211', '15 × 25 cm', 'A semente demora de 15 a 20 dias para nascer. Mantenha o solo úmido.'),
+    c('coentro', 'Coentro', 'Temperos', 'Semente direta', 35, 50, '122221122211', '10 × 20 cm', 'Semeie de novo a cada 2 semanas. Com calor, floresce e perde o sabor.'),
+    c('manjericao', 'Manjericão', 'Temperos', 'Semente ou muda', 50, 70, '210000001222', '30 × 40 cm', 'Corte as pontas para ramificar e retire as flores.'),
+    c('hortela', 'Hortelã', 'Temperos', 'Muda', 60, 90, '222110012222', '30 × 30 cm', 'Espalha-se muito: plante em vaso ou em canteiro separado.'),
+    c('cenoura', 'Cenoura', 'Raízes e bulbos', 'Semente direta', 90, 120, '221110012222', '5 × 25 cm', 'Semeie direto no canteiro, não transplante. Deixe o solo solto e desbaste aos 20 dias.'),
+    c('beterraba', 'Beterraba', 'Raízes e bulbos', 'Semente direta', 60, 80, '221100012222', '10 × 25 cm', 'Desbaste com 4 folhas. Colha raízes de 5 a 7 cm.'),
+    c('rabanete', 'Rabanete', 'Raízes e bulbos', 'Semente direta', 25, 35, '222221122222', '5 × 15 cm', 'Colha logo: passou do ponto, fica oco e ardido.'),
+    c('batatadoce', 'Batata-doce', 'Raízes e bulbos', 'Rama', 120, 150, '100000000122', '30 × 80 cm', 'Plante ramas de 30 cm em leiras. Colha quando as folhas amarelarem.'),
+    c('cebola', 'Cebola', 'Raízes e bulbos', 'Muda', 120, 150, '000012222100', '10 × 30 cm', 'Plante no outono, com dias mais curtos. Colha quando as folhas tombarem.'),
+    c('alho', 'Alho', 'Raízes e bulbos', 'Dente', 150, 180, '001222100000', '10 × 25 cm', 'Plante os dentes inteiros com a ponta para cima. Colha quando metade das folhas secar.'),
+    c('tomate', 'Tomate', 'Frutos', 'Muda', 70, 95, '100000001222', '50 × 100 cm', 'Tutore, retire os brotos laterais e regue na base, sem molhar as folhas.'),
+    c('pimentao', 'Pimentão', 'Frutos', 'Muda', 90, 120, '000000001221', '50 × 100 cm', 'Precisa de tutor e adubo. Colha verde ou deixe amadurecer.'),
+    c('berinjela', 'Berinjela', 'Frutos', 'Muda', 90, 120, '000000000221', '60 × 100 cm', 'Gosta de calor e adubo. Colha com a casca ainda brilhante.'),
+    c('jilo', 'Jiló', 'Frutos', 'Muda', 90, 110, '000000000122', '60 × 100 cm', 'Aguenta bem o calor. Colha o fruto verde e firme.'),
+    c('pepino', 'Pepino', 'Frutos', 'Semente direta', 45, 60, '100000001222', '50 × 100 cm', 'Tutore em cerca ou tela. Rega regular evita fruto amargo.'),
+    c('abobrinha', 'Abobrinha', 'Frutos', 'Semente direta', 45, 60, '100000001222', '80 × 100 cm', 'Colha jovem, com 15 a 20 cm. Quanto mais colhe, mais produz.'),
+    c('abobora', 'Abóbora', 'Frutos', 'Semente direta', 100, 130, '000000001222', '200 × 300 cm', 'Precisa de muito espaço. Colha quando o cabo secar.'),
+    c('quiabo', 'Quiabo', 'Frutos', 'Semente direta', 60, 80, '100000000122', '30 × 80 cm', 'Colha a cada 1 ou 2 dias, com o fruto macio, de 10 a 12 cm.'),
+    c('milho', 'Milho verde', 'Frutos', 'Semente direta', 80, 100, '100000001222', '30 × 80 cm', 'Plante em blocos de fileiras para polinizar bem. Colha com as barbas escuras.'),
+    c('vagem', 'Feijão-vagem', 'Leguminosas', 'Semente direta', 50, 65, '210000001222', '10 × 50 cm', 'Os de trepar pedem tutor. Colha antes de os grãos marcarem a vagem.'),
+    c('ervilha', 'Ervilha', 'Leguminosas', 'Semente direta', 70, 90, '001222221000', '5 × 50 cm', 'Prefere clima ameno e pede tutor. Colha vagens cheias e macias.')
+  ];
+  var GROUPS = ['Folhas', 'Temperos', 'Raízes e bulbos', 'Frutos', 'Leguminosas'];
+  var SOL = { 'Folhas': 'Sol pleno ou meia-sombra', 'Temperos': 'Sol pleno', 'Raízes e bulbos': 'Sol pleno', 'Frutos': 'Sol pleno', 'Leguminosas': 'Sol pleno' };
+  var CROP_BY_ID = {}; CROPS.forEach(function (x) { CROP_BY_ID[x.id] = x; });
+
+  var MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  var MES_CURTO = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
+  var LVL = { 2: 'Ótimo mês', 1: 'Possível, com cuidado', 0: 'Fora de época' };
+
+  var CLIMA = [
+    ['Verão ameno e chuvoso', 'Dias quentes e chuva frequente, em geral à tarde. Não há geada.', ['Mantenha boa drenagem nos canteiros e vigie fungos nas folhas', 'Tutore tomate e pepino e colha com frequência']],
+    ['Verão ameno e chuvoso', 'Calor e chuva continuam. Bom mês para começar o plantio de inverno.', ['Semeie couve, brócolis e repolho em bandejas', 'Vigie lagartas e lesmas depois das chuvas']],
+    ['Fim do verão', 'As noites começam a esfriar e a chuva segue. Excelente mês para folhas e raízes.', ['Plante alface, rúcula, beterraba e cenoura', 'Prepare o composto para o outono']],
+    ['Outono fresco', 'Temperaturas caindo e neblina pela manhã. Mês bom para couves e folhas.', ['Plante couve, repolho, brócolis e espinafre', 'Comece a plantar alho e ervilha']],
+    ['Outono frio', 'Noites frias e as primeiras geadas, principalmente em locais baixos. O crescimento desacelera.', ['Deixe manta, palha ou túnel baixo à mão', 'Plante alho e ervilha, e cebola em mudas']],
+    ['Inverno frio, com geada', 'Frio forte e geadas, mais comuns de madrugada e em baixadas.', ['Cubra as folhas sensíveis, como alface e couve-flor, nas noites de geada', 'Descubra a horta quando o sol aparecer']],
+    ['Inverno frio, com geada', 'Costuma ser o período mais frio do ano. Geadas frequentes e crescimento lento.', ['Regue pouco, de manhã cedo, e proteja o solo com palha', 'Repolho, couve, beterraba e cenoura aguentam bem o frio']],
+    ['Fim do inverno', 'Ainda pode haver geada, mas os dias ficam mais longos. Hora de preparar as mudas de primavera.', ['Semeie tomate e pimentão em bandejas protegidas', 'Não leve as mudas de calor para o canteiro antes de passar o risco de geada']],
+    ['Primavera instável', 'Dias mais quentes se alternam com frentes frias. Geada tardia ainda é possível no começo do mês.', ['Plante as culturas de calor só depois do risco de geada', 'Aproveite o mês para folhas e raízes']],
+    ['Primavera', 'A temperatura sobe e chove bastante. Boa época para tomate, pepino e abobrinha.', ['Transplante tomate, pepino, abobrinha e milho', 'Atenção a lesmas e ao encharcamento']],
+    ['Começo do verão', 'Calor ameno e chuva frequente. É o auge do plantio das culturas de calor.', ['Plante berinjela, jiló e feijão-vagem', 'Tutore o tomate e retire os brotos laterais']],
+    ['Verão ameno e chuvoso', 'Dias quentes e chuva frequente. Não há geada.', ['Colha com frequência para não passar do ponto', 'Proteja as folhas delicadas do sol forte do meio-dia']]
+  ];
+
+  var LOG_TYPES = { plantio: 'Plantio', rega: 'Rega', adubacao: 'Adubação', capina: 'Capina', praga: 'Praga ou doença', colheita: 'Colheita', clima: 'Clima', obs: 'Observação' };
+  var LOG_CLASS = { plantio: 'l2', rega: 'grow', adubacao: 'l1', capina: 'l1', praga: 'late', colheita: 'ready', clima: 'grow', obs: '' };
+  var REQ_STATUS = { pendente: 'Pendente', aprovado: 'Aprovado', entregue: 'Entregue', recusado: 'Recusado' };
+  var REQ_CLASS = { pendente: 'soon', aprovado: 'grow', entregue: 'ready', recusado: 'late' };
+
+  /* ---------- Utilitários ---------- */
+  function $(s, r) { return (r || document).querySelector(s); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (ch) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]; }); }
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function isoDate(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function today() { return isoDate(new Date()); }
+  function parseISO(s) { var p = String(s).split('-').map(Number); return new Date(p[0], (p[1] || 1) - 1, p[2] || 1); }
+  function addDays(s, n) { var d = parseISO(s); d.setDate(d.getDate() + n); return isoDate(d); }
+  function diffDays(a, b) { return Math.round((parseISO(a) - parseISO(b)) / 86400000); }
+  function fmtShort(s) { return parseISO(s).toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' }).replace('.', ''); }
+  function fmtDay(s) {
+    var d = diffDays(today(), s);
+    if (d === 0) return 'Hoje'; if (d === 1) return 'Ontem';
+    return parseISO(s).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
+  }
+  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function norm(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  var ls = {
+    get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) { /* sem armazenamento local */ } }
+  };
+  var toastTimer;
+  function toast(msg) {
+    var t = $('#toast'); t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.hidden = true; }, 3200);
+  }
+
+  /* ---------- Armazenamento: compartilhado (db) ou neste aparelho ---------- */
+  var COLS = ['plantings', 'logs', 'seeds', 'requests'];
+  var S = { plantings: [], logs: [], seeds: [], requests: [] };
+  var env = { mode: 'loading', canWrite: true, isAdmin: true, uid: null, profileName: '', dl: null, loadFailed: false };
+  var dbh = null;
+  var chain = {};
+  function enqueue(key, fn) {
+    var p = (chain[key] || Promise.resolve()).then(fn, fn);
+    chain[key] = p.catch(function () { });
+    return p;
+  }
+  function loadLocal() {
+    try {
+      var raw = ls.get('caderno-horta-v1');
+      if (raw) { var o = JSON.parse(raw); COLS.forEach(function (c) { S[c] = Array.isArray(o[c]) ? o[c] : []; }); }
+    } catch (e) { /* dados locais ilegíveis */ }
+  }
+  function saveLocal() { ls.set('caderno-horta-v1', JSON.stringify(S)); }
+  function save(col, obj) {
+    var id = obj.id || uid();
+    var rest = JSON.parse(JSON.stringify(obj)); delete rest.id;
+    return enqueue(col + '/' + id, function () {
+      if (env.mode === 'shared') { return dbh.collection(col).doc(id).set(rest).then(function () { return id; }); }
+      var i = S[col].findIndex(function (x) { return x.id === id; });
+      var row = Object.assign({ id: id }, rest);
+      if (i >= 0) S[col][i] = row; else S[col].push(row);
+      saveLocal(); renderData(); return id;
+    });
+  }
+  function del(col, id) {
+    return enqueue(col + '/' + id, function () {
+      if (env.mode === 'shared') { return dbh.collection(col).doc(id).delete(); }
+      S[col] = S[col].filter(function (x) { return x.id !== id; });
+      saveLocal(); renderData(); return null;
+    });
+  }
+  function fail(e) {
+    var code = e && e.code;
+    if (code === 'quota_exceeded') toast('O caderno está cheio. Apague registros antigos.');
+    else if (code === 'invalid_argument') toast('Você não tem permissão para registrar aqui.');
+    else toast('Não foi possível salvar. Tente de novo.');
+  }
+  function W() { return env.canWrite; }
+
+  async function boot() {
+    var db = null, user = null;
+    try {
+      if (window.claude && window.claude.use) {
+        var r = await Promise.all([
+          window.claude.use('db').catch(function () { return null; }),
+          window.claude.use('user').catch(function () { return null; }),
+          window.claude.use('downloads').catch(function () { return null; })
+        ]);
+        db = r[0]; user = r[1]; env.dl = r[2];
+      }
+    } catch (e) { /* segue em modo local */ }
+    if (db) {
+      env.mode = 'shared'; dbh = db;
+      if (user) {
+        try {
+          env.uid = await user.id();
+          var cw = await user.can('data.write'); env.canWrite = cw !== false;
+          env.isAdmin = await user.canEdit();
+          var me = await user.me(); env.profileName = (me && me.name) || '';
+        } catch (e) { /* identidade indisponível */ }
+      }
+      var ready = {};
+      var timer = setTimeout(function () { if (Object.keys(ready).length < COLS.length) { env.loadFailed = true; renderHeader(); } }, 10000);
+      COLS.forEach(function (col) {
+        dbh.collection(col).onSnapshot(function (snap) {
+          S[col] = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+          ready[col] = true; if (Object.keys(ready).length === COLS.length) { clearTimeout(timer); env.loadFailed = false; }
+          renderData(); renderHeader();
+        }, function () { env.loadFailed = true; renderHeader(); });
+      });
+    } else {
+      env.mode = 'local'; env.isAdmin = true; loadLocal();
+    }
+    renderHeader(); renderData();
+  }
+
+  /* ---------- Interface: estado e navegação ---------- */
+  var UI = { tab: 'hoje', q: '', group: 'Todas', now: false, view: 'lista', plantFilter: 'ativos', logFilter: 'todos' };
+  var TABS = ['hoje', 'epocas', 'plantios', 'sementes', 'diario'];
+
+  function renderHeader() {
+    var el = $('#sync'), tx = $('#syncText');
+    el.className = 'sync ' + (env.mode === 'shared' ? 'shared' : env.mode === 'local' ? 'local' : '');
+    tx.textContent = env.mode === 'shared' ? (env.loadFailed ? 'Sem conexão com o caderno' : 'Compartilhado') : env.mode === 'local' ? 'Só neste aparelho' : 'Carregando…';
+    $('#today').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+  }
+  function showTab(id) {
+    if (TABS.indexOf(id) < 0) id = 'hoje';
+    UI.tab = id;
+    TABS.forEach(function (t) { $('#p-' + t).hidden = t !== id; });
+    document.querySelectorAll('.nav button').forEach(function (b) {
+      if (b.dataset.id === id) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
+    renderTab(id);
+    window.scrollTo(0, 0);
+  }
+  function renderTab(id) {
+    if (id === 'hoje') renderHoje();
+    else if (id === 'epocas') renderEpocas();
+    else if (id === 'plantios') renderPlantios();
+    else if (id === 'sementes') renderSementes();
+    else if (id === 'diario') renderDiario();
+  }
+  function renderData() { if (UI.tab !== 'epocas') renderTab(UI.tab); }
+
+  /* ---------- Blocos reutilizáveis ---------- */
+  function loadingBox() { return '<div class="empty"><strong>Carregando o caderno…</strong><span>Um instante.</span></div>'; }
+  function readOnlyNotice() { return W() ? '' : '<div class="notice info">Você pode ver o caderno, mas não pode registrar. Peça acesso de colaborador a quem criou o aplicativo.</div>'; }
+  function lvlNow(cr) { return Number(cr.m[new Date().getMonth()]); }
+  function stripLabel(m) {
+    var best = [], ok = [];
+    m.split('').forEach(function (v, i) { if (v === '2') best.push(MESES[i]); else if (v === '1') ok.push(MESES[i]); });
+    return 'Ótimo em: ' + (best.join(', ') || 'nenhum mês') + '. Possível em: ' + (ok.join(', ') || 'nenhum mês') + '.';
+  }
+  function strip(m) {
+    var cm = new Date().getMonth();
+    return '<div class="strip" role="img" aria-label="' + esc(stripLabel(m)) + '">' + m.split('').map(function (v, i) {
+      return '<span class="m m' + v + (i === cm ? ' now' : '') + '" aria-hidden="true">' + MES_CURTO[i] + '</span>';
+    }).join('') + '</div>';
+  }
+  function plantInfo(p) {
+    var t = today(), elapsed = diffDays(t, p.plantedOn), key, label;
+    if (p.status === 'colhido') { key = 'done'; label = 'Colhido'; }
+    else if (elapsed > p.cycleMax) { key = 'late'; label = 'Colher já'; }
+    else if (elapsed >= p.cycleMin) { key = 'ready'; label = 'Pronto para colher'; }
+    else if (p.cycleMin - elapsed <= 7) { key = 'soon'; label = 'Colher em breve'; }
+    else { key = 'grow'; label = 'Crescendo'; }
+    return { elapsed: elapsed, start: addDays(p.plantedOn, p.cycleMin), end: addDays(p.plantedOn, p.cycleMax), key: key, label: label, pct: Math.max(0, Math.min(100, Math.round(elapsed / p.cycleMin * 100))) };
+  }
+  function plantCard(p, withActions) {
+    var i = plantInfo(p);
+    var when = p.status === 'colhido'
+      ? 'Colhido em ' + fmtShort(p.harvestedOn || p.plantedOn) + (p.harvestQty ? ' · ' + esc(p.harvestQty) : '')
+      : 'Colher entre ' + fmtShort(i.start) + ' e ' + fmtShort(i.end);
+    var bar = p.status === 'colhido' ? '' : '<div class="bar' + (i.key === 'late' ? ' late' : '') + '" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + i.pct + '" aria-label="Andamento até a colheita"><span style="width:' + i.pct + '%"></span></div>';
+    var acts = '';
+    if (withActions && W()) {
+      acts = '<div class="actions">' + (p.status === 'colhido' ? '' : '<button class="btn small primary" type="button" data-act="harvest" data-id="' + esc(p.id) + '">Colhi</button>') +
+        '<button class="btn small danger" type="button" data-act="del" data-col="plantings" data-id="' + esc(p.id) + '">Excluir</button></div>';
+    }
+    return '<article class="card"><div class="row start"><div class="stack" style="gap:2px"><h3>' + esc(p.cropName) + '</h3><span class="meta">' + esc(p.bed) + ' · plantado em ' + fmtShort(p.plantedOn) + (p.qty ? ' · ' + esc(p.qty) : '') + '</span></div><span class="chip ' + i.key + '">' + i.label + '</span></div>' +
+      bar + '<p class="meta">' + (p.status === 'colhido' ? '' : 'Dia ' + Math.max(0, i.elapsed) + ' (colhe entre o dia ' + p.cycleMin + ' e o ' + p.cycleMax + '). ') + when + '</p>' + (p.notes ? '<p>' + esc(p.notes) + '</p>' : '') + acts + '</article>';
+  }
+
+  /* ---------- Aba Hoje ---------- */
+  function renderHoje() {
+    var m = new Date().getMonth(), cl = CLIMA[m];
+    var h = '';
+    if (env.mode === 'local') h += '<div class="notice">Os registros ficam só neste aparelho. Para todos registrarem juntos, quem criou o aplicativo precisa compartilhá-lo com os moradores como colaboradores.</div>';
+    if (env.loadFailed) h += '<div class="notice">Não foi possível falar com o caderno compartilhado agora. O que aparece pode estar desatualizado.</div>';
+    h += readOnlyNotice();
+
+    // Colheitas
+    var active = S.plantings.filter(function (p) { return p.status !== 'colhido'; }).sort(function (a, b) { return addDays(a.plantedOn, a.cycleMin).localeCompare(addDays(b.plantedOn, b.cycleMin)); });
+    h += '<div class="card"><div class="row"><h2>Para colher</h2>' + (W() ? '<button class="btn small" type="button" data-act="plant-new">Novo plantio</button>' : '') + '</div>';
+    if (env.mode === 'loading') h += loadingBox();
+    else if (!active.length) h += '<div class="empty"><strong>Nenhum plantio em andamento</strong><span>Registre o que foi plantado e o caderno avisa quando chegar a hora de colher.</span>' + (W() ? '<button class="btn primary" type="button" data-act="plant-new">Registrar o primeiro plantio</button>' : '') + '</div>';
+    else h += '<div class="stack">' + active.slice(0, 4).map(function (p) { return plantCard(p, false); }).join('') + '</div>' + (active.length > 4 ? '<button class="btn" type="button" data-act="tab" data-id="plantios">Ver todos os ' + active.length + ' plantios</button>' : '');
+    h += '</div>';
+
+    // Plantar agora
+    var now = CROPS.filter(function (x) { return lvlNow(x) === 2; });
+    h += '<div class="card"><h2>Plantar em ' + MESES[m] + '</h2><p class="meta">Culturas com época ótima neste mês.</p>' +
+      (now.length ? '<div class="actions">' + now.map(function (x) { return '<button class="btn small" type="button" data-act="crop-goto" data-id="' + x.id + '">' + esc(x.nome) + '</button>'; }).join('') + '</div>' : '<p>Neste mês quase nada tem época ótima. Veja a aba Épocas para o que é possível.</p>') + '</div>';
+
+    // Clima
+    h += '<div class="card"><div class="row start"><div class="stack" style="gap:2px"><h2>Clima de ' + MESES[m] + '</h2><span class="meta">' + esc(cl[0]) + '</span></div></div><p class="lead">' + esc(cl[1]) + '</p><ul style="margin:0;padding-left:20px">' + cl[2].map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>' +
+      '<p class="hint">Referência geral para Curitiba. A previsão do dia, com alerta de geada, vem dos sites abaixo.</p>' +
+      '<div class="actions"><a class="btn small" href="https://www.simepar.br/" target="_blank" rel="noopener">Previsão no Simepar</a><a class="btn small" href="https://portal.inmet.gov.br/" target="_blank" rel="noopener">Previsão no INMET</a></div>' +
+      (W() ? '<h3>Anotar o tempo de hoje</h3><div class="actions">' + ['Choveu', 'Sol forte', 'Frio ou geada', 'Vento forte', 'Tempo seco'].map(function (t) { return '<button class="btn small" type="button" data-act="log-new" data-type="clima" data-text="' + esc(t) + '">' + t + '</button>'; }).join('') + '</div>' : '') + '</div>';
+
+    // Sementes
+    var low = S.seeds.filter(function (s) { return Number(s.qty) <= Number(s.min || 0); });
+    var pend = S.requests.filter(function (r) { return r.status === 'pendente'; });
+    h += '<div class="card"><h2>Sementes</h2>' +
+      (env.mode === 'loading' ? loadingBox() :
+        (low.length ? '<p class="lead">Para repor: ' + low.map(function (s) { return '<b>' + esc(s.name) + '</b> (' + esc(s.qty) + ')'; }).join(', ') + '.</p>' : '<p class="meta">' + (S.seeds.length ? 'Nenhuma semente com estoque baixo.' : 'Ainda não há sementes cadastradas.') + '</p>') +
+        '<p class="meta">' + pend.length + (pend.length === 1 ? ' pedido pendente.' : ' pedidos pendentes.') + '</p>') +
+      '<button class="btn" type="button" data-act="tab" data-id="sementes">Abrir sementes</button></div>';
+    $('#p-hoje').innerHTML = h;
+  }
+
+  /* ---------- Aba Épocas ---------- */
+  function renderEpocas() {
+    var h = '<div class="card soft"><p>Referência para <b>Curitiba e região</b>, onde o inverno é frio, com geada, e chove o ano todo. Os valores são aproximados. Os dias de colheita contam do plantio da semente ou do transplante da muda, e no frio a colheita costuma atrasar de 2 a 4 semanas. Em dúvida, confirme com um técnico agrícola, como os da prefeitura (Programa Hortas Comunitárias) ou do IDR-Paraná.</p></div>';
+    h += '<div class="card"><label for="q">Buscar cultura<input id="q" type="search" placeholder="Ex.: tomate" value="' + esc(UI.q) + '" autocomplete="off"></label>' +
+      '<div class="seg" role="group" aria-label="Grupo">' + ['Todas'].concat(GROUPS).map(function (g) { return '<button class="btn small" type="button" data-act="group" data-id="' + esc(g) + '" aria-pressed="' + (UI.group === g) + '">' + esc(g) + '</button>'; }).join('') + '</div>' +
+      '<div class="seg" role="group" aria-label="Opções"><button class="btn small" type="button" data-act="now" aria-pressed="' + UI.now + '">Só o que dá para plantar agora</button>' +
+      '<button class="btn small" type="button" data-act="view" data-id="lista" aria-pressed="' + (UI.view === 'lista') + '">Lista</button><button class="btn small" type="button" data-act="view" data-id="quadro" aria-pressed="' + (UI.view === 'quadro') + '">Quadro do ano</button></div></div>';
+    h += '<div id="cropList" class="panel"></div>';
+    $('#p-epocas').innerHTML = h;
+    renderCropList();
+    $('#q').addEventListener('input', function (e) { UI.q = e.target.value; renderCropList(); });
+  }
+  function filteredCrops() {
+    var q = norm(UI.q);
+    return CROPS.filter(function (x) {
+      return (UI.group === 'Todas' || x.grupo === UI.group) && (!q || norm(x.nome).indexOf(q) >= 0) && (!UI.now || lvlNow(x) >= 1);
+    }).sort(function (a, b) { return UI.now ? (lvlNow(b) - lvlNow(a)) || a.nome.localeCompare(b.nome, 'pt-BR') : a.nome.localeCompare(b.nome, 'pt-BR'); });
+  }
+  function renderCropList() {
+    var list = filteredCrops(), h = '';
+    if (!list.length) { $('#cropList').innerHTML = '<div class="empty"><strong>Nada encontrado</strong><span>Tire o filtro ou mude a busca.</span></div>'; return; }
+    if (UI.view === 'quadro') {
+      var cm = new Date().getMonth();
+      h += '<div class="legend"><span><i class="m2"></i>Ótimo</span><span><i class="m1"></i>Possível</span><span><i></i>Fora de época</span></div>';
+      h += '<div class="tablewrap"><table><thead><tr><th scope="col">Cultura</th>' + MES_CURTO.map(function (l, i) { return '<th scope="col" title="' + MESES[i] + '">' + l + '</th>'; }).join('') + '</tr></thead><tbody>';
+      var last = '';
+      list.slice().sort(function (a, b) { return GROUPS.indexOf(a.grupo) - GROUPS.indexOf(b.grupo) || a.nome.localeCompare(b.nome, 'pt-BR'); }).forEach(function (x) {
+        if (x.grupo !== last) { h += '<tr class="grp"><td colspan="13">' + esc(x.grupo) + '</td></tr>'; last = x.grupo; }
+        h += '<tr><td>' + esc(x.nome) + '</td>' + x.m.split('').map(function (v, i) { return '<td class="' + (i === cm ? 'now' : '') + '"><span class="dot m' + v + '" role="img" aria-label="' + esc(MESES[i] + ': ' + LVL[v]) + '"></span></td>'; }).join('') + '</tr>';
+      });
+      h += '</tbody></table></div>';
+    } else {
+      h += list.map(function (x) {
+        var l = lvlNow(x);
+        return '<article class="card"><div class="row start"><div class="stack" style="gap:2px"><h3>' + esc(x.nome) + '</h3><span class="meta">' + esc(x.grupo) + ' · ' + esc(x.metodo) + ' · colhe em ' + x.min + ' a ' + x.max + ' dias</span></div><span class="chip l' + l + '">' + LVL[l] + '</span></div>' +
+          strip(x.m) +
+          '<details><summary>Como plantar</summary><dl><dt>Espaço</dt><dd>' + esc(x.esp) + '</dd><dt>Luz</dt><dd>' + esc(SOL[x.grupo]) + '</dd><dt>Dica</dt><dd>' + esc(x.dica) + '</dd></dl></details>' +
+          (W() ? '<div class="actions"><button class="btn small primary" type="button" data-act="plant-new" data-id="' + x.id + '">Registrar plantio</button></div>' : '') + '</article>';
+      }).join('');
+    }
+    $('#cropList').innerHTML = h;
+  }
+
+  /* ---------- Aba Plantios ---------- */
+  function renderPlantios() {
+    var h = readOnlyNotice();
+    h += '<div class="row"><h2>Plantios</h2>' + (W() ? '<button class="btn primary" type="button" data-act="plant-new">Novo plantio</button>' : '') + '</div>';
+    h += '<div class="seg" role="group" aria-label="Filtro"><button class="btn small" type="button" data-act="pfilter" data-id="ativos" aria-pressed="' + (UI.plantFilter === 'ativos') + '">Em andamento</button><button class="btn small" type="button" data-act="pfilter" data-id="colhidos" aria-pressed="' + (UI.plantFilter === 'colhidos') + '">Colhidos</button></div>';
+    if (env.mode === 'loading') { h += loadingBox(); }
+    else {
+      var list = S.plantings.filter(function (p) { return (p.status === 'colhido') === (UI.plantFilter === 'colhidos'); });
+      if (UI.plantFilter === 'ativos') list.sort(function (a, b) { return addDays(a.plantedOn, a.cycleMin).localeCompare(addDays(b.plantedOn, b.cycleMin)); });
+      else list.sort(function (a, b) { return String(b.harvestedOn || '').localeCompare(String(a.harvestedOn || '')); });
+      h += list.length ? list.map(function (p) { return plantCard(p, true); }).join('') :
+        '<div class="empty"><strong>' + (UI.plantFilter === 'ativos' ? 'Nenhum plantio em andamento' : 'Nenhuma colheita registrada') + '</strong><span>' + (UI.plantFilter === 'ativos' ? 'Registre o que foi plantado, em qual canteiro e quando.' : 'Quando você marcar um plantio como colhido, ele aparece aqui.') + '</span></div>';
+    }
+    $('#p-plantios').innerHTML = h;
+  }
+
+  /* ---------- Aba Sementes ---------- */
+  function renderSementes() {
+    var h = readOnlyNotice();
+    h += '<div class="row"><h2>Estoque de sementes</h2>' + (W() ? '<button class="btn primary" type="button" data-act="seed-new">Cadastrar semente</button>' : '') + '</div>';
+    if (env.mode === 'loading') h += loadingBox();
+    else if (!S.seeds.length) h += '<div class="empty"><strong>Nenhuma semente cadastrada</strong><span>Cadastre o que a horta tem guardado. O caderno avisa quando o estoque ficar baixo.</span></div>';
+    else {
+      h += S.seeds.slice().sort(function (a, b) { return String(a.name).localeCompare(String(b.name), 'pt-BR'); }).map(function (s) {
+        var low = Number(s.qty) <= Number(s.min || 0);
+        return '<article class="card"><div class="row start"><div class="stack" style="gap:2px"><h3>' + esc(s.name) + '</h3><span class="meta">Mínimo: ' + esc(s.min || 0) + ' ' + esc(s.unit || '') + (s.note ? ' · ' + esc(s.note) : '') + '</span></div>' + (low ? '<span class="chip low">Repor</span>' : '<span class="chip l2">Em estoque</span>') + '</div>' +
+          '<div class="row"><div class="qty">' + (W() ? '<button class="btn" type="button" data-act="seed-adj" data-id="' + esc(s.id) + '" data-d="-1" aria-label="Tirar uma unidade de ' + esc(s.name) + '">−</button>' : '') + '<b aria-live="polite">' + esc(s.qty) + '</b><span class="meta">' + esc(s.unit || '') + '</span>' + (W() ? '<button class="btn" type="button" data-act="seed-adj" data-id="' + esc(s.id) + '" data-d="1" aria-label="Pôr uma unidade de ' + esc(s.name) + '">+</button>' : '') + '</div>' +
+          (W() ? '<div class="actions">' + (low ? '<button class="btn small primary" type="button" data-act="req-new" data-id="' + esc(s.id) + '">Pedir mais</button>' : '') + '<button class="btn small" type="button" data-act="seed-edit" data-id="' + esc(s.id) + '">Editar</button><button class="btn small danger" type="button" data-act="del" data-col="seeds" data-id="' + esc(s.id) + '">Excluir</button></div>' : '') + '</div></article>';
+      }).join('');
+    }
+    // Pedidos
+    h += '<div class="row" style="margin-top:8px"><h2>Pedidos de sementes</h2>' + (W() ? '<button class="btn" type="button" data-act="req-new">Solicitar sementes</button>' : '') + '</div>';
+    if (env.mode !== 'loading') {
+      var reqs = S.requests.slice().sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
+      if (!reqs.length) h += '<div class="empty"><strong>Nenhum pedido ainda</strong><span>Quem precisar de sementes faz o pedido aqui, e quem cuida da compra acompanha a lista.</span></div>';
+      else {
+        if (reqs.some(function (r) { return r.status === 'pendente'; })) h += '<button class="btn" type="button" data-act="req-copy">Copiar pedidos pendentes para mandar por mensagem</button>';
+        h += reqs.map(function (r) {
+          var mine = env.mode === 'local' || (env.uid && r.uid === env.uid);
+          var ctrl = '';
+          if (W() && env.isAdmin) ctrl += '<div class="seg" role="group" aria-label="Situação do pedido">' + Object.keys(REQ_STATUS).map(function (k) { return '<button class="btn small" type="button" data-act="req-status" data-id="' + esc(r.id) + '" data-s="' + k + '" aria-pressed="' + (r.status === k) + '">' + REQ_STATUS[k] + '</button>'; }).join('') + '</div>';
+          if (W() && (mine || env.isAdmin)) ctrl += '<div class="actions"><button class="btn small danger" type="button" data-act="del" data-col="requests" data-id="' + esc(r.id) + '">Excluir pedido</button></div>';
+          return '<article class="card"><div class="row start"><div class="stack" style="gap:2px"><h3>' + esc(r.name) + ' · ' + esc(r.qty) + ' ' + esc(r.unit || '') + '</h3><span class="meta">Pedido por ' + esc(r.by || 'alguém') + ' em ' + fmtShort(r.date || today()) + (r.urgency === 'urgente' ? ' · urgente' : '') + '</span></div><span class="chip ' + (REQ_CLASS[r.status] || '') + '">' + (REQ_STATUS[r.status] || r.status) + '</span></div>' + (r.note ? '<p>' + esc(r.note) + '</p>' : '') + ctrl + '</article>';
+        }).join('');
+      }
+    }
+    $('#p-sementes').innerHTML = h;
+  }
+
+  /* ---------- Aba Diário ---------- */
+  function renderDiario() {
+    var h = readOnlyNotice();
+    h += '<div class="row"><h2>Diário da horta</h2>' + (W() ? '<button class="btn primary" type="button" data-act="log-new">Novo registro</button>' : '') + '</div>';
+    h += '<div class="seg" role="group" aria-label="Tipo de registro"><button class="btn small" type="button" data-act="lfilter" data-id="todos" aria-pressed="' + (UI.logFilter === 'todos') + '">Todos</button>' + Object.keys(LOG_TYPES).map(function (k) { return '<button class="btn small" type="button" data-act="lfilter" data-id="' + k + '" aria-pressed="' + (UI.logFilter === k) + '">' + LOG_TYPES[k] + '</button>'; }).join('') + '</div>';
+    if (env.mode === 'loading') h += loadingBox();
+    else {
+      var list = S.logs.filter(function (l) { return UI.logFilter === 'todos' || l.type === UI.logFilter; }).sort(function (a, b) { return String(b.date).localeCompare(String(a.date)) || (b.createdAt || 0) - (a.createdAt || 0); });
+      if (!list.length) h += '<div class="empty"><strong>Nada registrado ainda</strong><span>Anote rega, adubação, pragas, chuva e colheitas. O diário vira a memória da horta.</span></div>';
+      else {
+        var lastDay = '';
+        list.forEach(function (l) {
+          if (l.date !== lastDay) { h += '<div class="day">' + esc(fmtDay(l.date)) + '</div>'; lastDay = l.date; }
+          h += '<article class="card"><div class="log"><span class="chip ' + (LOG_CLASS[l.type] || '') + '">' + esc(LOG_TYPES[l.type] || 'Registro') + '</span><div class="txt"><p>' + esc(l.text) + '</p><p class="meta">' + (l.bed ? esc(l.bed) + ' · ' : '') + esc(l.by || '') + '</p></div></div>' +
+            (W() ? '<div class="actions"><button class="btn small danger" type="button" data-act="del" data-col="logs" data-id="' + esc(l.id) + '">Excluir</button></div>' : '') + '</article>';
+        });
+      }
+      if (env.dl) h += '<div class="card soft"><h3>Baixar planilhas</h3><p class="meta">Arquivos CSV que abrem no Excel ou no Planilhas. Servem para relatórios.</p><div class="actions"><button class="btn small" type="button" data-act="export" data-id="plantings">Plantios</button><button class="btn small" type="button" data-act="export" data-id="logs">Diário</button><button class="btn small" type="button" data-act="export" data-id="seeds">Sementes</button><button class="btn small" type="button" data-act="export" data-id="requests">Pedidos</button></div></div>';
+    }
+    $('#p-diario').innerHTML = h;
+  }
+
+  /* ---------- Formulários (janela deslizante) ---------- */
+  function openSheet(title, html, onSubmit) {
+    $('#sheetTitle').textContent = title;
+    $('#sheetBody').innerHTML = html;
+    $('#sheet').hidden = false; document.body.classList.add('noscroll');
+    var f = $('#sheetBody form');
+    if (f && onSubmit) f.addEventListener('submit', function (e) { e.preventDefault(); onSubmit(new FormData(f), f); });
+    var first = $('#sheetBody input:not([type=hidden]), #sheetBody select, #sheetBody textarea, #sheetBody button');
+    if (first) setTimeout(function () { first.focus(); }, 30);
+  }
+  function closeSheet() { $('#sheet').hidden = true; document.body.classList.remove('noscroll'); }
+  function myName() { return ls.get('caderno-horta-nome') || env.profileName || ''; }
+  function rememberName(fd) { var n = String(fd.get('by') || '').trim(); if (n) ls.set('caderno-horta-nome', n); return n; }
+  function nameField() { return '<label for="f-by">Seu nome<input id="f-by" name="by" required maxlength="40" autocomplete="given-name" value="' + esc(myName()) + '"></label>'; }
+  function bedList() {
+    var set = {}; S.plantings.forEach(function (p) { if (p.bed) set[p.bed] = 1; }); S.logs.forEach(function (l) { if (l.bed) set[l.bed] = 1; });
+    return '<datalist id="beds">' + Object.keys(set).sort().map(function (b) { return '<option value="' + esc(b) + '">'; }).join('') + '</datalist>';
+  }
+  function submitRow(label) { return '<div class="actions"><button class="btn primary" type="submit">' + label + '</button><button class="btn" type="button" data-act="close">Cancelar</button></div>'; }
+
+  function plantForm(cropId) {
+    var opts = GROUPS.map(function (g) { return '<optgroup label="' + esc(g) + '">' + CROPS.filter(function (x) { return x.grupo === g; }).map(function (x) { return '<option value="' + x.id + '"' + (x.id === cropId ? ' selected' : '') + '>' + esc(x.nome) + '</option>'; }).join('') + '</optgroup>'; }).join('');
+    openSheet('Registrar plantio', '<form class="fields"><label for="f-crop">O que foi plantado<select id="f-crop" name="crop" required>' + opts + '</select></label>' +
+      '<label for="f-bed">Canteiro<input id="f-bed" name="bed" required list="beds" maxlength="40" placeholder="Ex.: Canteiro 3"></label>' + bedList() +
+      '<div class="two"><label for="f-date">Data do plantio<input id="f-date" name="date" type="date" required value="' + today() + '"></label><label for="f-qty">Quantidade (opcional)<input id="f-qty" name="qty" maxlength="40" placeholder="Ex.: 12 mudas"></label></div>' +
+      '<p class="hint">No inverno de Curitiba a colheita costuma atrasar de 2 a 4 semanas em relação à previsão.</p><label for="f-note">Observação (opcional)<textarea id="f-note" name="note" maxlength="300"></textarea></label>' + nameField() + submitRow('Salvar plantio') + '</form>',
+      async function (fd) {
+        var cr = CROP_BY_ID[fd.get('crop')]; var by = rememberName(fd);
+        if (!cr) return;
+        try {
+          var id = await save('plantings', { cropId: cr.id, cropName: cr.nome, bed: String(fd.get('bed')).trim(), plantedOn: fd.get('date'), cycleMin: cr.min, cycleMax: cr.max, qty: String(fd.get('qty') || '').trim(), notes: String(fd.get('note') || '').trim(), status: 'ativo', by: by, uid: env.uid, createdAt: Date.now() });
+          await save('logs', { type: 'plantio', bed: String(fd.get('bed')).trim(), text: 'Plantio de ' + cr.nome + (fd.get('qty') ? ' (' + String(fd.get('qty')).trim() + ')' : '') + '.', date: fd.get('date'), by: by, uid: env.uid, ref: id, createdAt: Date.now() });
+          closeSheet(); toast('Plantio salvo. Colheita prevista a partir de ' + fmtShort(addDays(fd.get('date'), cr.min)) + '.');
+        } catch (e) { fail(e); }
+      });
+  }
+  function harvestForm(id) {
+    var p = S.plantings.find(function (x) { return x.id === id; }); if (!p) return;
+    openSheet('Registrar colheita de ' + p.cropName, '<form class="fields"><div class="two"><label for="f-date">Data<input id="f-date" name="date" type="date" required value="' + today() + '"></label><label for="f-qty">Quanto colheu (opcional)<input id="f-qty" name="qty" maxlength="40" placeholder="Ex.: 3 kg ou 20 maços"></label></div>' +
+      '<label for="f-note">Observação (opcional)<textarea id="f-note" name="note" maxlength="300"></textarea></label>' + nameField() + submitRow('Salvar colheita') + '</form>',
+      async function (fd) {
+        var by = rememberName(fd), qty = String(fd.get('qty') || '').trim(), note = String(fd.get('note') || '').trim();
+        try {
+          await save('plantings', Object.assign({}, p, { status: 'colhido', harvestedOn: fd.get('date'), harvestQty: qty }));
+          await save('logs', { type: 'colheita', bed: p.bed, text: 'Colheita de ' + p.cropName + (qty ? ': ' + qty : '') + '.' + (note ? ' ' + note : ''), date: fd.get('date'), by: by, uid: env.uid, ref: p.id, createdAt: Date.now() });
+          closeSheet(); toast('Colheita registrada.');
+        } catch (e) { fail(e); }
+      });
+  }
+  function logForm(type, text) {
+    var opts = Object.keys(LOG_TYPES).map(function (k) { return '<option value="' + k + '"' + (k === (type || 'rega') ? ' selected' : '') + '>' + LOG_TYPES[k] + '</option>'; }).join('');
+    openSheet('Novo registro', '<form class="fields"><label for="f-type">Tipo<select id="f-type" name="type">' + opts + '</select></label>' +
+      '<label for="f-text">O que aconteceu<textarea id="f-text" name="text" required maxlength="400">' + esc(text || '') + '</textarea></label>' +
+      '<div class="two"><label for="f-bed">Canteiro (opcional)<input id="f-bed" name="bed" list="beds" maxlength="40"></label><label for="f-date">Data<input id="f-date" name="date" type="date" required value="' + today() + '"></label></div>' + bedList() +
+      nameField() + submitRow('Salvar registro') + '</form>',
+      async function (fd) {
+        var by = rememberName(fd);
+        try { await save('logs', { type: fd.get('type'), bed: String(fd.get('bed') || '').trim(), text: String(fd.get('text')).trim(), date: fd.get('date'), by: by, uid: env.uid, createdAt: Date.now() }); closeSheet(); toast('Registro salvo.'); }
+        catch (e) { fail(e); }
+      });
+  }
+  function seedDatalist() { return '<datalist id="seednames">' + CROPS.map(function (x) { return '<option value="' + esc(x.nome) + '">'; }).join('') + '</datalist>'; }
+  var UNITS = ['pacotes', 'gramas', 'sachês'];
+  function unitSelect(sel) { return UNITS.map(function (u) { return '<option' + (u === sel ? ' selected' : '') + '>' + u + '</option>'; }).join(''); }
+  function seedForm(id) {
+    var s = id ? S.seeds.find(function (x) { return x.id === id; }) : null;
+    openSheet(s ? 'Editar semente' : 'Cadastrar semente', '<form class="fields"><label for="f-name">Semente<input id="f-name" name="name" required list="seednames" maxlength="50" value="' + esc(s ? s.name : '') + '"></label>' + seedDatalist() +
+      '<div class="two"><label for="f-qty">Quantidade<input id="f-qty" name="qty" type="number" min="0" step="1" required inputmode="numeric" value="' + esc(s ? s.qty : 1) + '"></label><label for="f-unit">Unidade<select id="f-unit" name="unit">' + unitSelect(s && s.unit) + '</select></label></div>' +
+      '<label for="f-min">Avisar para repor quando chegar a<input id="f-min" name="min" type="number" min="0" step="1" required inputmode="numeric" value="' + esc(s ? s.min : 1) + '"></label>' +
+      '<label for="f-note">Observação (opcional)<input id="f-note" name="note" maxlength="80" value="' + esc(s ? s.note || '' : '') + '" placeholder="Ex.: validade 2027"></label>' + submitRow('Salvar') + '</form>',
+      async function (fd) {
+        try {
+          await save('seeds', Object.assign({}, s || {}, { name: String(fd.get('name')).trim(), qty: Number(fd.get('qty')), unit: fd.get('unit'), min: Number(fd.get('min')), note: String(fd.get('note') || '').trim(), updatedAt: Date.now() }));
+          closeSheet(); toast('Semente salva.');
+        } catch (e) { fail(e); }
+      });
+  }
+  function reqForm(seedId) {
+    var s = seedId ? S.seeds.find(function (x) { return x.id === seedId; }) : null;
+    openSheet('Solicitar sementes', '<form class="fields"><label for="f-name">Qual semente<input id="f-name" name="name" required list="seednames" maxlength="50" value="' + esc(s ? s.name : '') + '"></label>' + seedDatalist() +
+      '<div class="two"><label for="f-qty">Quantidade<input id="f-qty" name="qty" type="number" min="1" step="1" required inputmode="numeric" value="1"></label><label for="f-unit">Unidade<select id="f-unit" name="unit">' + unitSelect(s && s.unit) + '</select></label></div>' +
+      '<label for="f-urg">Urgência<select id="f-urg" name="urgency"><option value="normal">Normal</option><option value="urgente">Urgente</option></select></label>' +
+      '<label for="f-note">Observação (opcional)<textarea id="f-note" name="note" maxlength="200" placeholder="Ex.: para o canteiro 4, plantio em março"></textarea></label>' + nameField() + submitRow('Enviar pedido') + '</form>',
+      async function (fd) {
+        var by = rememberName(fd);
+        try { await save('requests', { name: String(fd.get('name')).trim(), qty: Number(fd.get('qty')), unit: fd.get('unit'), urgency: fd.get('urgency'), note: String(fd.get('note') || '').trim(), status: 'pendente', by: by, uid: env.uid, date: today(), createdAt: Date.now() }); closeSheet(); toast('Pedido enviado.'); }
+        catch (e) { fail(e); }
+      });
+  }
+  function infoSheet() {
+    var body = env.mode === 'shared'
+      ? '<p>Os registros ficam guardados no aplicativo e todos que têm acesso veem as mesmas informações, na hora.</p><p>Quem entra só para ver não consegue anotar. Para anotar, a pessoa precisa de acesso de colaborador, dado por quem criou o aplicativo.</p>' + (env.canWrite ? '' : '<div class="notice info">Neste momento você está só vendo.</div>')
+      : '<p>Neste momento os registros ficam <b>somente neste aparelho e neste navegador</b>. Se você limpar os dados do navegador, eles se perdem, e ninguém mais os vê.</p><p>Para que todos os moradores registrem no mesmo caderno, quem criou o aplicativo precisa compartilhá-lo com cada pessoa como colaboradora e cada uma precisa entrar com sua conta.</p>';
+    openSheet('Onde ficam os registros', '<div class="stack">' + body + '<button class="btn primary" type="button" data-act="close">Entendi</button></div>');
+  }
+  function copySheet(text) {
+    openSheet('Pedidos pendentes', '<div class="fields"><label for="f-copy">Texto para enviar<textarea id="f-copy" readonly rows="8">' + esc(text) + '</textarea></label><div class="actions"><button class="btn primary" type="button" data-act="copy-do">Copiar texto</button><button class="btn" type="button" data-act="close">Fechar</button></div></div>');
+    var ta = $('#f-copy'); ta.focus(); ta.select();
+  }
+
+  /* ---------- Exportar CSV ---------- */
+  var EXPORTS = {
+    plantings: { file: 'plantios-horta.csv', cols: [['cropName', 'Cultura'], ['bed', 'Canteiro'], ['plantedOn', 'Plantado em'], ['qty', 'Quantidade'], ['cycleMin', 'Dias mínimos até colher'], ['cycleMax', 'Dias máximos até colher'], ['status', 'Situação'], ['harvestedOn', 'Colhido em'], ['harvestQty', 'Colhido'], ['by', 'Responsável'], ['notes', 'Observação']] },
+    logs: { file: 'diario-horta.csv', cols: [['date', 'Data'], ['type', 'Tipo'], ['bed', 'Canteiro'], ['text', 'Registro'], ['by', 'Responsável']] },
+    seeds: { file: 'sementes-horta.csv', cols: [['name', 'Semente'], ['qty', 'Quantidade'], ['unit', 'Unidade'], ['min', 'Mínimo'], ['note', 'Observação']] },
+    requests: { file: 'pedidos-sementes-horta.csv', cols: [['date', 'Data'], ['name', 'Semente'], ['qty', 'Quantidade'], ['unit', 'Unidade'], ['urgency', 'Urgência'], ['status', 'Situação'], ['by', 'Pedido por'], ['note', 'Observação']] }
+  };
+  function csvCell(v) { var s = v == null ? '' : String(v); return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
+  async function exportCSV(kind) {
+    var def = EXPORTS[kind]; if (!def || !env.dl) return;
+    var rows = S[kind].slice();
+    var csv = '﻿' + def.cols.map(function (c) { return csvCell(c[1]); }).join(',') + '\n' + rows.map(function (r) { return def.cols.map(function (c) { var v = r[c[0]]; if (c[0] === 'type') v = LOG_TYPES[v] || v; return csvCell(v); }).join(','); }).join('\n');
+    try { await env.dl.save({ filename: def.file, data: csv }); toast('Arquivo pronto.'); }
+    catch (e) { if (!e || e.code !== 'declined') toast('Não foi possível baixar o arquivo.'); }
+  }
+
+  /* ---------- Ações ---------- */
+  var armed = null;
+  document.addEventListener('click', function (e) {
+    var el = e.target.closest('[data-act]'); if (!el) return;
+    var act = el.dataset.act, id = el.dataset.id;
+    if (act === 'tab') { location.hash = id; if (UI.tab === id) showTab(id); }
+    else if (act === 'close') closeSheet();
+    else if (act === 'info') infoSheet();
+    else if (act === 'group') { UI.group = id; renderEpocas(); }
+    else if (act === 'now') { UI.now = !UI.now; renderEpocas(); }
+    else if (act === 'view') { UI.view = id; renderEpocas(); }
+    else if (act === 'pfilter') { UI.plantFilter = id; renderPlantios(); }
+    else if (act === 'lfilter') { UI.logFilter = id; renderDiario(); }
+    else if (act === 'crop-goto') { UI.q = CROP_BY_ID[id].nome; UI.group = 'Todas'; UI.now = false; UI.view = 'lista'; location.hash = 'epocas'; if (UI.tab === 'epocas') showTab('epocas'); }
+    else if (act === 'plant-new') plantForm(id);
+    else if (act === 'harvest') harvestForm(id);
+    else if (act === 'log-new') logForm(el.dataset.type, el.dataset.text);
+    else if (act === 'seed-new') seedForm();
+    else if (act === 'seed-edit') seedForm(id);
+    else if (act === 'req-new') reqForm(id);
+    else if (act === 'seed-adj') {
+      var s = S.seeds.find(function (x) { return x.id === id; });
+      if (s) save('seeds', Object.assign({}, s, { qty: Math.max(0, (Number(s.qty) || 0) + Number(el.dataset.d)), updatedAt: Date.now() })).catch(fail);
+    }
+    else if (act === 'req-status') {
+      var r = S.requests.find(function (x) { return x.id === id; });
+      if (r && r.status !== el.dataset.s) save('requests', Object.assign({}, r, { status: el.dataset.s })).catch(fail);
+    }
+    else if (act === 'req-copy') {
+      var pend = S.requests.filter(function (x) { return x.status === 'pendente'; });
+      copySheet('Pedidos de sementes da horta:\n' + pend.map(function (x) { return '- ' + x.name + ': ' + x.qty + ' ' + (x.unit || '') + (x.urgency === 'urgente' ? ' (urgente)' : '') + ' — ' + (x.by || 'sem nome'); }).join('\n'));
+    }
+    else if (act === 'copy-do') {
+      var ta = $('#f-copy');
+      var done = function () { toast('Texto copiado.'); };
+      var manual = function () { ta.focus(); ta.select(); toast('Selecione o texto e use Copiar do seu aparelho.'); };
+      try { navigator.clipboard.writeText(ta.value).then(done, manual); } catch (err) { manual(); }
+    }
+    else if (act === 'export') exportCSV(id);
+    else if (act === 'del') {
+      var key = el.dataset.col + '/' + id;
+      if (armed && armed.key === key) {
+        clearTimeout(armed.t); armed = null;
+        del(el.dataset.col, id).then(function () { toast('Excluído.'); }).catch(fail);
+      } else {
+        if (armed) { clearTimeout(armed.t); }
+        var label = el.textContent;
+        el.classList.add('armed'); el.textContent = 'Toque de novo para excluir';
+        armed = { key: key, t: setTimeout(function () { armed = null; el.classList.remove('armed'); el.textContent = label; }, 4000) };
+      }
+    }
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('#sheet').hidden) closeSheet(); });
+  $('#sheet').addEventListener('click', function (e) { if (e.target.id === 'sheet') closeSheet(); });
+  window.addEventListener('hashchange', function () { showTab(location.hash.replace('#', '')); });
+
+  /* ---------- Início ---------- */
+  renderHeader();
+  showTab(location.hash.replace('#', '') || 'hoje');
+  boot();
+})();
+</script>
