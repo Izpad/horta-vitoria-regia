@@ -2,8 +2,7 @@
 <title>Caderno da Horta</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;700&display=swap">
 <style>
-/* Layout: cabeçalho simples, coluna única de até 860px, navegação fixa embaixo com 5 seções.
-   Pensado para uso no celular, com letra grande e botões de pelo menos 48px. */
+
 :root {
   --bg: #F3F6F1;
   --surface: #FFFFFF;
@@ -137,7 +136,7 @@ td.now .dot { outline: 2px solid var(--ink); outline-offset: 1px; }
 .log .txt { overflow-wrap: anywhere; }
 .nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--surface); border-top: 1px solid var(--line);
   display: grid; grid-template-columns: repeat(5, 1fr);
-  padding: 4px max(8px, env(safe-area-inset-right, 0px)) calc(4px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
+  padding: 4px max(8px, env(safe-area-inset-right, 0px), calc((100vw - 860px) / 2)) calc(4px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px), calc((100vw - 860px) / 2)); }
 .nav button { min-height: 62px; border: 0; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; border-radius: 12px; }
 .nav button svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .nav button[aria-current="page"] { color: var(--leaf); background: var(--leaf-soft); }
@@ -282,6 +281,7 @@ td.now .dot { outline: 2px solid var(--ink); outline-offset: 1px; }
   var S = { plantings: [], logs: [], seeds: [], requests: [] };
   var env = { mode: 'loading', canWrite: true, isAdmin: true, uid: null, profileName: '', dl: null, loadFailed: false };
   var dbh = null;
+  var OUTSIDE = !(window.claude && window.claude.use);
   var chain = {};
   function enqueue(key, fn) {
     var p = (chain[key] || Promise.resolve()).then(fn, fn);
@@ -430,7 +430,7 @@ td.now .dot { outline: 2px solid var(--ink); outline-offset: 1px; }
   function renderHoje() {
     var m = new Date().getMonth(), cl = CLIMA[m];
     var h = '';
-    if (env.mode === 'local') h += '<div class="notice">Os registros ficam só neste aparelho. Para todos registrarem juntos, quem criou o aplicativo precisa compartilhá-lo com os moradores como colaboradores.</div>';
+    if (env.mode === 'local') h += '<div class="notice">' + (OUTSIDE ? 'Esta versão guarda os registros somente neste aparelho. Baixe as planilhas na aba Diário para fazer cópia de segurança.' : 'Os registros ficam só neste aparelho. Para todos registrarem juntos, quem criou o aplicativo precisa compartilhá-lo com os moradores como colaboradores.') + '</div>';
     if (env.loadFailed) h += '<div class="notice">Não foi possível falar com o caderno compartilhado agora. O que aparece pode estar desatualizado.</div>';
     h += readOnlyNotice();
 
@@ -573,7 +573,7 @@ td.now .dot { outline: 2px solid var(--ink); outline-offset: 1px; }
             (W() ? '<div class="actions"><button class="btn small danger" type="button" data-act="del" data-col="logs" data-id="' + esc(l.id) + '">Excluir</button></div>' : '') + '</article>';
         });
       }
-      if (env.dl) h += '<div class="card soft"><h3>Baixar planilhas</h3><p class="meta">Arquivos CSV que abrem no Excel ou no Planilhas. Servem para relatórios.</p><div class="actions"><button class="btn small" type="button" data-act="export" data-id="plantings">Plantios</button><button class="btn small" type="button" data-act="export" data-id="logs">Diário</button><button class="btn small" type="button" data-act="export" data-id="seeds">Sementes</button><button class="btn small" type="button" data-act="export" data-id="requests">Pedidos</button></div></div>';
+      if (env.dl || OUTSIDE) h += '<div class="card soft"><h3>Baixar planilhas</h3><p class="meta">Arquivos CSV que abrem no Excel ou no Planilhas. Servem para relatórios.</p><div class="actions"><button class="btn small" type="button" data-act="export" data-id="plantings">Plantios</button><button class="btn small" type="button" data-act="export" data-id="logs">Diário</button><button class="btn small" type="button" data-act="export" data-id="seeds">Sementes</button><button class="btn small" type="button" data-act="export" data-id="requests">Pedidos</button></div></div>';
     }
     $('#p-diario').innerHTML = h;
   }
@@ -670,7 +670,7 @@ td.now .dot { outline: 2px solid var(--ink); outline-offset: 1px; }
   function infoSheet() {
     var body = env.mode === 'shared'
       ? '<p>Os registros ficam guardados no aplicativo e todos que têm acesso veem as mesmas informações, na hora.</p><p>Quem entra só para ver não consegue anotar. Para anotar, a pessoa precisa de acesso de colaborador, dado por quem criou o aplicativo.</p>' + (env.canWrite ? '' : '<div class="notice info">Neste momento você está só vendo.</div>')
-      : '<p>Neste momento os registros ficam <b>somente neste aparelho e neste navegador</b>. Se você limpar os dados do navegador, eles se perdem, e ninguém mais os vê.</p><p>Para que todos os moradores registrem no mesmo caderno, quem criou o aplicativo precisa compartilhá-lo com cada pessoa como colaboradora e cada uma precisa entrar com sua conta.</p>';
+      : '<p>Neste momento os registros ficam <b>somente neste aparelho e neste navegador</b>. Se você limpar os dados do navegador, eles se perdem, e ninguém mais os vê.</p>' + (OUTSIDE ? '<p>Esta versão não tem caderno compartilhado. Use o botão Baixar planilhas, na aba Diário, para guardar uma cópia dos registros.</p>' : '<p>Para que todos os moradores registrem no mesmo caderno, quem criou o aplicativo precisa compartilhá-lo com cada pessoa como colaboradora e cada uma precisa entrar com sua conta.</p>');
     openSheet('Onde ficam os registros', '<div class="stack">' + body + '<button class="btn primary" type="button" data-act="close">Entendi</button></div>');
   }
   function copySheet(text) {
@@ -687,9 +687,14 @@ td.now .dot { outline: 2px solid var(--ink); outline-offset: 1px; }
   };
   function csvCell(v) { var s = v == null ? '' : String(v); return /[",\n;]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
   async function exportCSV(kind) {
-    var def = EXPORTS[kind]; if (!def || !env.dl) return;
+    var def = EXPORTS[kind]; if (!def || !(env.dl || OUTSIDE)) return;
     var rows = S[kind].slice();
     var csv = '﻿' + def.cols.map(function (c) { return csvCell(c[1]); }).join(',') + '\n' + rows.map(function (r) { return def.cols.map(function (c) { var v = r[c[0]]; if (c[0] === 'type') v = LOG_TYPES[v] || v; return csvCell(v); }).join(','); }).join('\n');
+    if (!env.dl) {
+      var url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+      var a = document.createElement('a'); a.href = url; a.download = def.file; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1500); toast('Arquivo baixado.'); return;
+    }
     try { await env.dl.save({ filename: def.file, data: csv }); toast('Arquivo pronto.'); }
     catch (e) { if (!e || e.code !== 'declined') toast('Não foi possível baixar o arquivo.'); }
   }
